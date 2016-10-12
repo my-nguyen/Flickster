@@ -20,8 +20,30 @@ import java.util.List;
  */
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
+   static Context context;
+
+   // view lookup cache
+   private static class ViewHolder {
+      ImageView image;
+      TextView title;
+      TextView overview;
+
+      public ViewHolder(View view) {
+         image = (ImageView)view.findViewById(R.id.image);
+         title = (TextView)view.findViewById(R.id.title);
+         overview = (TextView)view.findViewById(R.id.overview);
+      }
+
+      void populate(Movie movie) {
+         Picasso.with(context).load(movie.posterPath).into(image);
+         title.setText(movie.originalTitle);
+         overview.setText(movie.overview);
+      }
+   }
+
    public MovieArrayAdapter(Context context, List<Movie> movies) {
       super(context, android.R.layout.simple_list_item_1, movies);
+      this.context = context;
    }
 
    @NonNull
@@ -30,24 +52,26 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       // get the data item for this position
       Movie movie = getItem(position);
 
-      // check if the existing view is being reused
+      // check if an existing view is being reused
+      ViewHolder holder;
       if (convertView == null) {
+         // if there's no view to reuse, inflate a brand new view for row
          LayoutInflater inflater = LayoutInflater.from(getContext());
          convertView = inflater.inflate(R.layout.item_movie, parent, false);
+
+         holder = new ViewHolder(convertView);
+
+         // cache the ViewHolder object inside the fresh view
+         convertView.setTag(holder);
+      } else {
+         // view is being recycled, so retrieve the ViewHolder object from tag
+         holder = (ViewHolder)convertView.getTag();
+         // clear out image from convertView
+         holder.image.setImageResource(0);
       }
 
-      // find the image view
-      ImageView image = (ImageView)convertView.findViewById(R.id.image);
-      // clear out image from convertView
-      image.setImageResource(0);
-
-      TextView title = (TextView)convertView.findViewById(R.id.title);
-      TextView overview = (TextView)convertView.findViewById(R.id.overview);
-
       // populate data
-      Picasso.with(getContext()).load(movie.posterPath).into(image);
-      title.setText(movie.originalTitle);
-      overview.setText(movie.overview);
+      holder.populate(movie);
 
       // return the view
       return convertView;
