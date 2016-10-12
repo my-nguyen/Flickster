@@ -38,9 +38,9 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
       void populate(Movie movie) {
          if (sOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            Picasso.with(sContext).load(movie.posterPath).into(image);
+            Picasso.with(sContext).load(movie.posterPath).placeholder(R.drawable.homer).into(image);
          } else if (sOrientation == Configuration.ORIENTATION_LANDSCAPE){
-            Picasso.with(sContext).load(movie.backdropPath).into(image);
+            Picasso.with(sContext).load(movie.backdropPath).placeholder(R.drawable.homer).into(image);
          }
          title.setText(movie.originalTitle);
          overview.setText(movie.overview);
