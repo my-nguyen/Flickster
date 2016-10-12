@@ -9,8 +9,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.nguyen.flickster.adapters.MovieArrayAdapter;
 import com.nguyen.flickster.models.Movie;
 
@@ -23,7 +28,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 
 import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
 import static com.nguyen.flickster.Defs.TMDB_VALUE_API_KEY;
@@ -32,6 +36,7 @@ import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 public class MainActivity extends AppCompatActivity {
    List<Movie> mMovies;
    MovieArrayAdapter mAdapter;
+   RequestQueue mRequestQueue;
    @BindView(R.id.listView) ListView mListView;
    @BindView(R.id.swipe_container) SwipeRefreshLayout mSwipeContainer;
 
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
       int orientation = getResources().getConfiguration().orientation;
       mAdapter = new MovieArrayAdapter(this, mMovies, orientation);
       mListView.setAdapter(mAdapter);
+      mRequestQueue = Volley.newRequestQueue(this);
 
       fetchMovies();
 
@@ -81,29 +87,33 @@ public class MainActivity extends AppCompatActivity {
    private void fetchMovies() {
       final String NOW_PLAYING = "now_playing?";
       String url = TMDB_URL_PREFIX + NOW_PLAYING + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
-      AsyncHttpClient client = new AsyncHttpClient();
-      client.get(url, new JsonHttpResponseHandler() {
-         @Override
-         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-            JSONArray movieJsonResults = null;
-            try {
-               movieJsonResults = response.getJSONArray("results");
-               // clear out old items before appending new ones
-               mAdapter.clear();
-               // add new items to the adapter
-               mAdapter.addAll(Movie.fromJSONArray(movieJsonResults));
-               Log.d("TRUONG", mMovies.toString());
-               // signal that refresh has finished
-               mSwipeContainer.setRefreshing(false);
-            } catch (JSONException e) {
-               e.printStackTrace();
+      JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
+            new Response.Listener<JSONObject>() {
+               @Override
+               public void onResponse(JSONObject response) {
+                  JSONArray movieJsonResults = null;
+                  try {
+                     movieJsonResults = response.getJSONArray("results");
+                     // clear out old items before appending new ones
+                     mAdapter.clear();
+                     // add new items to the adapter
+                     mAdapter.addAll(Movie.fromJSONArray(movieJsonResults));
+                     Log.d("TRUONG", mMovies.toString());
+                     // signal that refresh has finished
+                     mSwipeContainer.setRefreshing(false);
+                  } catch (JSONException e) {
+                     e.printStackTrace();
+                  }
+               }
+            },
+            new Response.ErrorListener() {
+               @Override
+               public void onErrorResponse(VolleyError error) {
+                  VolleyLog.e("Error: ", error.getMessage());
+               }
             }
-         }
-
-         @Override
-         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-            super.onFailure(statusCode, headers, responseString, throwable);
-         }
-      });
+      );
+      // Add your Requests to the RequestQueue to execute
+      mRequestQueue.add(req);
    }
 }
