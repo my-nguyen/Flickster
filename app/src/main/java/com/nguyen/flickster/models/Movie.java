@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,20 +12,43 @@ import java.util.List;
  * Created by My on 10/11/2016.
  */
 
-public class Movie {
+public class Movie implements Serializable {
    public String posterPath;
-   public String backdropPath;
-   public String originalTitle;
    public String overview;
+   public String releaseDate;
+   public List<Integer> genreIds;
+   public String id;
+   public String originalTitle;
+   public String backdropPath;
+   public double popularity;
+   public double voteAverage;
 
    public Movie(JSONObject jsonObject) throws JSONException {
       String prefix = "https://image.tmdb.org/t/p/w342";
       String poster = jsonObject.getString("poster_path");
       posterPath = prefix + poster;
+      overview = jsonObject.getString("overview");
+      releaseDate = jsonObject.getString("release_date");
+      JSONArray ids = jsonObject.getJSONArray("genre_ids");
+      for (int i = 0; i < ids.length(); i++)
+         ; // genreIds.add(jsonObject.get)
+      id = jsonObject.getString("id");
+      originalTitle = jsonObject.getString("original_title");
       String backdrop = jsonObject.getString("backdrop_path");
       backdropPath = prefix + backdrop;
-      originalTitle = jsonObject.getString("original_title");
-      overview = jsonObject.getString("overview");
+      popularity = jsonObject.getDouble("popularity");
+      voteAverage = jsonObject.getDouble("vote_average");
+   }
+
+   @Override
+   public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append("poster path: ").append(posterPath);
+      builder.append(", backdrop path: ").append(backdropPath);
+      builder.append(", original title: ").append(originalTitle);
+      builder.append(", overview: ").append(overview);
+      builder.append(", vote average: ").append(voteAverage);
+      return builder.toString();
    }
 
    public static List<Movie> fromJSONArray(JSONArray array) {

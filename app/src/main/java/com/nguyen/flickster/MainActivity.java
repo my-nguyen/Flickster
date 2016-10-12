@@ -1,9 +1,12 @@
 package com.nguyen.flickster;
 
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -19,6 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+
+import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
+import static com.nguyen.flickster.Defs.TMDB_VALUE_API_KEY;
+import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 
 public class MainActivity extends AppCompatActivity {
    List<Movie> mMovies;
@@ -51,10 +58,27 @@ public class MainActivity extends AppCompatActivity {
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
+
+      mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         @Override
+         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Movie movie = mMovies.get(i);
+            if (movie.voteAverage >= 5.0) {
+               Intent intent = new Intent(MainActivity.this, YouTubePlayerActivity.class);
+               intent.putExtra("ID_IN", movie.id);
+               startActivity(intent);
+            } else {
+               Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+               intent.putExtra("MOVIE_IN", movie);
+               startActivity(intent);
+            }
+         }
+      });
    }
 
    private void fetchMovies() {
-      String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+      final String NOW_PLAYING = "now_playing?";
+      String url = TMDB_URL_PREFIX + NOW_PLAYING + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
       AsyncHttpClient client = new AsyncHttpClient();
       client.get(url, new JsonHttpResponseHandler() {
          @Override

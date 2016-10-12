@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Flickster</string>
+    <string name="synopsis_label">Synopsis</string>
+    <string name="popularity_label">Popularity</string>
 </resources>
