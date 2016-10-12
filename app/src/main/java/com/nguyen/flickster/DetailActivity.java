@@ -11,20 +11,25 @@ import android.widget.TextView;
 import com.nguyen.flickster.models.Movie;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by My on 10/12/2016.
  */
 
 public class DetailActivity extends AppCompatActivity {
+   @BindView(R.id.image) ImageView image;
+   @BindView(R.id.title) TextView title;
+   @BindView(R.id.synopsis) TextView synopsis;
+   @BindView(R.id.popularity) TextView popularity;
+
    @Override
    protected void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_detail);
 
-      ImageView image = (ImageView)findViewById(R.id.image);
-      TextView title = (TextView)findViewById(R.id.title);
-      TextView synopsis = (TextView)findViewById(R.id.synopsis);
-      TextView popularity = (TextView)findViewById(R.id.popularity);
+      ButterKnife.bind(this);
 
       final Movie movie = (Movie)getIntent().getSerializableExtra("MOVIE_IN");
       Picasso.with(this).load(movie.posterPath).placeholder(R.drawable.homer).into(image);

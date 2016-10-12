@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
@@ -25,11 +27,14 @@ import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 
 public class YouTubePlayerActivity extends YouTubeBaseActivity {
    static final String YOUTUBEPLAYER_API_KEY = "AIzaSyAaOD8M-u6mY1fL2F0D-jIHiUwNonxFKW4";
+   @BindView(R.id.youtube_player) YouTubePlayerView playerView;
 
    @Override
    protected void onCreate(Bundle bundle) {
       super.onCreate(bundle);
       setContentView(R.layout.activity_youtube);
+
+      ButterKnife.bind(this);
 
       String id = getIntent().getStringExtra("ID_IN");
       final String TRAILERS = "trailers?";
@@ -44,7 +49,6 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity {
                JSONObject youtubeTrailer = youtubeTrailers.getJSONObject(0);
                final String trailer = youtubeTrailer.getString("source");
 
-               final YouTubePlayerView playerView = (YouTubePlayerView)findViewById(R.id.youtube_player);
                playerView.initialize(YOUTUBEPLAYER_API_KEY, new YouTubePlayer.OnInitializedListener() {
                   @Override
                   public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {

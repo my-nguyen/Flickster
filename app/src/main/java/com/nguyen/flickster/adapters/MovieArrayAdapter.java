@@ -16,6 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by My on 10/11/2016.
  */
@@ -25,15 +28,13 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
    static int sOrientation;
 
    // view lookup cache
-   private static class ViewHolder {
-      ImageView image;
-      TextView title;
-      TextView overview;
+   static class ViewHolder {
+      @BindView(R.id.image) ImageView image;
+      @BindView(R.id.title) TextView title;
+      @BindView(R.id.overview) TextView overview;
 
       public ViewHolder(View view) {
-         image = (ImageView)view.findViewById(R.id.image);
-         title = (TextView)view.findViewById(R.id.title);
-         overview = (TextView)view.findViewById(R.id.overview);
+         ButterKnife.bind(this, view);
       }
 
       void populate(Movie movie) {

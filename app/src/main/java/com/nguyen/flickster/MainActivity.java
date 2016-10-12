@@ -21,6 +21,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
@@ -30,15 +32,16 @@ import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 public class MainActivity extends AppCompatActivity {
    List<Movie> mMovies;
    MovieArrayAdapter mAdapter;
-   ListView mListView;
-   SwipeRefreshLayout mSwipeContainer;
+   @BindView(R.id.listView) ListView mListView;
+   @BindView(R.id.swipe_container) SwipeRefreshLayout mSwipeContainer;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      mListView = (ListView)findViewById(R.id.listView);
+      ButterKnife.bind(this);
+
       mMovies = new ArrayList<>();
       int orientation = getResources().getConfiguration().orientation;
       mAdapter = new MovieArrayAdapter(this, mMovies, orientation);
@@ -46,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
       fetchMovies();
 
-      mSwipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
       mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
          @Override
          public void onRefresh() {
