@@ -20,19 +20,20 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
-   List<Movie> movies;
-   MovieArrayAdapter adapter;
-   ListView listView;
+   List<Movie> mMovies;
+   MovieArrayAdapter mAdapter;
+   ListView mListView;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      listView = (ListView)findViewById(R.id.listView);
-      movies = new ArrayList<>();
-      adapter = new MovieArrayAdapter(this, movies);
-      listView.setAdapter(adapter);
+      mListView = (ListView)findViewById(R.id.listView);
+      mMovies = new ArrayList<>();
+      int orientation = getResources().getConfiguration().orientation;
+      mAdapter = new MovieArrayAdapter(this, mMovies, orientation);
+      mListView.setAdapter(mAdapter);
       String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
       AsyncHttpClient client = new AsyncHttpClient();
       client.get(url, new JsonHttpResponseHandler() {
@@ -41,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
             JSONArray movieJsonResults = null;
             try {
                movieJsonResults = response.getJSONArray("results");
-               movies.addAll(Movie.fromJSONArray(movieJsonResults));
-               adapter.notifyDataSetChanged();
-               Log.d("NGUYEN", movies.toString());
+               mMovies.addAll(Movie.fromJSONArray(movieJsonResults));
+               mAdapter.notifyDataSetChanged();
+               Log.d("TRUONG", mMovies.toString());
             } catch (JSONException e) {
                e.printStackTrace();
             }

@@ -13,13 +13,16 @@ import java.util.List;
 
 public class Movie {
    public String posterPath;
+   public String backdropPath;
    public String originalTitle;
    public String overview;
 
    public Movie(JSONObject jsonObject) throws JSONException {
       String prefix = "https://image.tmdb.org/t/p/w342";
-      String path = jsonObject.getString("poster_path");
-      posterPath = prefix + path;
+      String poster = jsonObject.getString("poster_path");
+      posterPath = prefix + poster;
+      String backdrop = jsonObject.getString("backdrop_path");
+      backdropPath = prefix + backdrop;
       originalTitle = jsonObject.getString("original_title");
       overview = jsonObject.getString("overview");
    }

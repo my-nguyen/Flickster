@@ -1,6 +1,7 @@
 package com.nguyen.flickster.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,8 @@ import java.util.List;
  */
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
-   static Context context;
+   static Context sContext;
+   static int sOrientation;
 
    // view lookup cache
    private static class ViewHolder {
@@ -35,15 +37,20 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       }
 
       void populate(Movie movie) {
-         Picasso.with(context).load(movie.posterPath).into(image);
+         if (sOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            Picasso.with(sContext).load(movie.posterPath).into(image);
+         } else if (sOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            Picasso.with(sContext).load(movie.backdropPath).into(image);
+         }
          title.setText(movie.originalTitle);
          overview.setText(movie.overview);
       }
    }
 
-   public MovieArrayAdapter(Context context, List<Movie> movies) {
+   public MovieArrayAdapter(Context context, List<Movie> movies, int orientation) {
       super(context, android.R.layout.simple_list_item_1, movies);
-      this.context = context;
+      sContext = context;
+      sOrientation = orientation;
    }
 
    @NonNull
