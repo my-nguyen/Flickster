@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by My on 10/12/2016.
@@ -32,7 +33,8 @@ public class DetailActivity extends AppCompatActivity {
       ButterKnife.bind(this);
 
       final Movie movie = (Movie)getIntent().getSerializableExtra("MOVIE_IN");
-      Picasso.with(this).load(movie.posterPath).placeholder(R.drawable.homer).into(image);
+      Picasso.with(this).load(movie.posterPath).placeholder(R.drawable.homer)
+            .transform(new RoundedCornersTransformation(10, 10)).into(image);
       image.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
