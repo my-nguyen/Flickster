@@ -30,7 +30,6 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
    static Context sContext;
-   public static Genres sAllGenres;
 
    // view lookup cache
    static class ViewHolder {
@@ -48,14 +47,19 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       void populate(Movie movie) {
          int widthPixels = sContext.getResources().getDisplayMetrics().widthPixels;
          Picasso.with(sContext).load(movie.backdropPath).resize(widthPixels, 0).placeholder(R.drawable.homer).into(image);
+
          play.setVisibility(movie.voteAverage >= 6.0 ? View.VISIBLE : View.GONE);
+
          title.setText(movie.originalTitle);
+
          String starCount = String.format("%.1f", movie.voteAverage);
          voteAverage.setText(starCount);
-         String genresString = sAllGenres.get(movie.genreIds.get(0));
+
+         String genresString = Genres.getInstance().get(movie.genreIds.get(0));
          for (int i = 1; i < movie.genreIds.size(); i++)
-            genresString += ", " + sAllGenres.get(movie.genreIds.get(i));
+            genresString += ", " + Genres.getInstance().get(movie.genreIds.get(i));
          genres.setText(genresString);
+
          SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
          try {
             Date date = format.parse(movie.releaseDate);

@@ -30,10 +30,9 @@ public class Movie implements Serializable {
       overview = jsonObject.getString("overview");
       releaseDate = jsonObject.getString("release_date");
       genreIds = new ArrayList<>();
-      String tmp = jsonObject.getString("genre_ids");
-      String[] tokens = tmp.split("[\\[\\],]");
-      for (int i = 1; i < tokens.length; i++)
-         genreIds.add(Integer.parseInt(tokens[i]));
+      JSONArray array = jsonObject.getJSONArray("genre_ids");
+      for (int i = 0; i < array.length(); i++)
+         genreIds.add((int)array.get(i));
       id = jsonObject.getString("id");
       originalTitle = jsonObject.getString("original_title");
       String backdrop = jsonObject.getString("backdrop_path");

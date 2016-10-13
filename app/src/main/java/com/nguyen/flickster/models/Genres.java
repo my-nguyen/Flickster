@@ -11,6 +11,12 @@ import java.util.HashMap;
  */
 
 public class Genres extends HashMap<Integer, String> {
+   private static Genres sInstance;
+
+   public static Genres getInstance() {
+      return sInstance;
+   }
+
    public Genres(JSONArray array) {
       for (int i = 0; i < array.length(); i++) {
          try {
@@ -22,5 +28,7 @@ public class Genres extends HashMap<Integer, String> {
             e.printStackTrace();
          }
       }
+
+      sInstance = this;
    }
 }

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nguyen.flickster.models.Genres;
 import com.nguyen.flickster.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -22,8 +23,9 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 public class DetailActivity extends AppCompatActivity {
    @BindView(R.id.image) ImageView image;
    @BindView(R.id.title) TextView title;
-   @BindView(R.id.synopsis) TextView synopsis;
-   @BindView(R.id.popularity) TextView popularity;
+   @BindView(R.id.vote_average) TextView voteAverage;
+   @BindView(R.id.genres) TextView genres;
+   @BindView(R.id.overview) TextView overview;
 
    @Override
    protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,8 +35,10 @@ public class DetailActivity extends AppCompatActivity {
       ButterKnife.bind(this);
 
       final Movie movie = (Movie)getIntent().getSerializableExtra("MOVIE_IN");
+
       Picasso.with(this).load(movie.posterPath).placeholder(R.drawable.homer)
             .transform(new RoundedCornersTransformation(10, 10)).into(image);
+
       image.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
@@ -43,8 +47,19 @@ public class DetailActivity extends AppCompatActivity {
             startActivity(intent);
          }
       });
-      title.setText(movie.originalTitle);
-      synopsis.setText(movie.overview);
-      popularity.setText(movie.popularity + "");
+
+      String year = movie.releaseDate.split("-")[0];
+      String text = movie.originalTitle + " (" + year + ")";
+      title.setText(text);
+
+      String starCount = String.format("%.1f", movie.voteAverage);
+      voteAverage.setText(starCount);
+
+      String genresString = Genres.getInstance().get(movie.genreIds.get(0));
+      for (int i = 1; i < movie.genreIds.size(); i++)
+         genresString += ", " + Genres.getInstance().get(movie.genreIds.get(i));
+      genres.setText(genresString);
+
+      overview.setText(movie.overview);
    }
 }

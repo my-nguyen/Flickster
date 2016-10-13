@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
    List<Movie> mMovies;
    MovieArrayAdapter mAdapter;
    RequestQueue mRequestQueue;
+   Genres mGenres;
    @BindView(R.id.listView) ListView mListView;
    @BindView(R.id.swipe_container) SwipeRefreshLayout mSwipeContainer;
 
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                   JSONArray jsonArray = null;
                   try {
                      jsonArray = response.getJSONArray("genres");
-                     mAdapter.sAllGenres = new Genres(jsonArray);
+                     mGenres = new Genres(jsonArray);
                   } catch (JSONException e) {
                      e.printStackTrace();
                   }
