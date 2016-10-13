@@ -15,6 +15,9 @@ import com.nguyen.flickster.models.Genres;
 import com.nguyen.flickster.models.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,15 +39,15 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       @BindView(R.id.title) TextView title;
       @BindView(R.id.vote_average) TextView voteAverage;
       @BindView(R.id.genres) TextView genres;
-      @BindView(R.id.overview) TextView overview;
+      @BindView(R.id.release_date) TextView releaseDate;
 
       public ViewHolder(View view) {
          ButterKnife.bind(this, view);
       }
 
       void populate(Movie movie) {
-            Picasso.with(sContext).load(movie.posterPath).placeholder(R.drawable.homer)
-                  .into(image);
+         int widthPixels = sContext.getResources().getDisplayMetrics().widthPixels;
+         Picasso.with(sContext).load(movie.backdropPath).resize(widthPixels, 0).placeholder(R.drawable.homer).into(image);
          play.setVisibility(movie.voteAverage >= 6.0 ? View.VISIBLE : View.GONE);
          title.setText(movie.originalTitle);
          String starCount = String.format("%.1f", movie.voteAverage);
@@ -53,7 +56,15 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
          for (int i = 1; i < movie.genreIds.size(); i++)
             genresString += ", " + sAllGenres.get(movie.genreIds.get(i));
          genres.setText(genresString);
-         overview.setText(movie.overview);
+         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+         try {
+            Date date = format.parse(movie.releaseDate);
+            format = new SimpleDateFormat("MM/dd/yyyy");
+            String text = format.format(date);
+            releaseDate.setText(text);
+         } catch (ParseException e) {
+            e.printStackTrace();
+         }
       }
    }
 

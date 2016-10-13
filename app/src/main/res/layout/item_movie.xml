@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <FrameLayout
         android:id="@+id/image_frame"
-        android:layout_width="0dp"
-        android:layout_weight="2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/image"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/image"/>
         <ImageView
             android:id="@+id/play"
             android:layout_width="match_parent"
@@ -24,18 +19,18 @@
             android:src="@drawable/play"/>
     </FrameLayout>
     <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="3"
+        android:layout_below="@+id/image_frame"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp">
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:paddingRight="10dp">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="290dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
             android:id="@+id/title"
-            android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:ellipsize="end"
             android:maxLines="1"/>
@@ -43,31 +38,31 @@
             android:id="@+id/vote_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            android:layout_toLeftOf="@+id/star"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
         <ImageView
+            android:id="@+id/star"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
-            android:layout_toRightOf="@id/vote_average"
-            android:layout_alignBottom="@id/vote_average"
             android:layout_marginLeft="3dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/vote_average"
+            android:layout_alignBottom="@+id/vote_average"
             android:src="@drawable/star"/>
         <TextView
             android:id="@+id/genres"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:textStyle="italic"
-            android:layout_below="@id/vote_average"
+            android:layout_below="@id/title"
             android:ellipsize="end"
             android:maxLines="1"/>
         <TextView
+            android:id="@+id/release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/genres"
-            android:layout_marginTop="20dp"
-            android:id="@+id/overview"
-            android:ellipsize="end"
-            android:maxLines="5"/>
+            android:layout_below="@+id/star"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
