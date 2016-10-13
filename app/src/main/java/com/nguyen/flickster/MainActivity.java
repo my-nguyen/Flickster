@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
       ButterKnife.bind(this);
 
       mMovies = new ArrayList<>();
-      int orientation = getResources().getConfiguration().orientation;
-      mAdapter = new MovieArrayAdapter(this, mMovies, orientation);
+      mAdapter = new MovieArrayAdapter(this, mMovies);
       mListView.setAdapter(mAdapter);
       mRequestQueue = Volley.newRequestQueue(this);
 

@@ -27,7 +27,6 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
    static Context sContext;
-   static int sOrientation;
    public static Genres sAllGenres;
 
    // view lookup cache
@@ -44,32 +43,23 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       }
 
       void populate(Movie movie) {
-         if (sOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Picasso.with(sContext).load(movie.posterPath).placeholder(R.drawable.homer)
                   .into(image);
-         } else if (sOrientation == Configuration.ORIENTATION_LANDSCAPE){
-            Picasso.with(sContext).load(movie.backdropPath).placeholder(R.drawable.homer)
-                  .transform(new RoundedCornersTransformation(10, 10)).into(image);
-         }
          play.setVisibility(movie.voteAverage >= 6.0 ? View.VISIBLE : View.GONE);
          title.setText(movie.originalTitle);
          String starCount = String.format("%.1f", movie.voteAverage);
          voteAverage.setText(starCount);
-         String genresString = "";
-         for (Integer genreId : movie.genreIds) {
-            genresString += sAllGenres.get(genreId) + ", ";
-         }
-         // chop the trailing ", "
-         genresString = genresString.substring(0, genresString.length()-2);
+         String genresString = sAllGenres.get(movie.genreIds.get(0));
+         for (int i = 1; i < movie.genreIds.size(); i++)
+            genresString += ", " + sAllGenres.get(movie.genreIds.get(i));
          genres.setText(genresString);
          overview.setText(movie.overview);
       }
    }
 
-   public MovieArrayAdapter(Context context, List<Movie> movies, int orientation) {
+   public MovieArrayAdapter(Context context, List<Movie> movies) {
       super(context, android.R.layout.simple_list_item_1, movies);
       sContext = context;
-      sOrientation = orientation;
    }
 
    @NonNull
