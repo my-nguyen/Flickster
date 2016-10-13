@@ -17,6 +17,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nguyen.flickster.adapters.MovieArrayAdapter;
+import com.nguyen.flickster.models.Genres;
 import com.nguyen.flickster.models.Movie;
 
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
+import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX_MOVIE;
 import static com.nguyen.flickster.Defs.TMDB_VALUE_API_KEY;
 import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
       mRequestQueue = Volley.newRequestQueue(this);
 
       fetchMovies();
+      fetchGenres();
 
       mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
          @Override
@@ -86,21 +89,49 @@ public class MainActivity extends AppCompatActivity {
 
    private void fetchMovies() {
       final String NOW_PLAYING = "now_playing?";
-      String url = TMDB_URL_PREFIX + NOW_PLAYING + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
+      String url = TMDB_URL_PREFIX_MOVIE + NOW_PLAYING + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
       JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
             new Response.Listener<JSONObject>() {
                @Override
                public void onResponse(JSONObject response) {
-                  JSONArray movieJsonResults = null;
+                  JSONArray jsonArray = null;
                   try {
-                     movieJsonResults = response.getJSONArray("results");
+                     jsonArray = response.getJSONArray("results");
                      // clear out old items before appending new ones
                      mAdapter.clear();
                      // add new items to the adapter
-                     mAdapter.addAll(Movie.fromJSONArray(movieJsonResults));
+                     mAdapter.addAll(Movie.fromJSONArray(jsonArray));
                      Log.d("TRUONG", mMovies.toString());
                      // signal that refresh has finished
                      mSwipeContainer.setRefreshing(false);
+                  } catch (JSONException e) {
+                     e.printStackTrace();
+                  }
+               }
+            },
+            new Response.ErrorListener() {
+               @Override
+               public void onErrorResponse(VolleyError error) {
+                  VolleyLog.e("Error: ", error.getMessage());
+               }
+            }
+      );
+      // Add your Requests to the RequestQueue to execute
+      mRequestQueue.add(req);
+   }
+
+   void fetchGenres() {
+      final String TMDB_TABLE_GENRE = "genre/movie/";
+      final String LIST = "list?";
+      String url = TMDB_URL_PREFIX + TMDB_TABLE_GENRE + LIST + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
+      JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
+            new Response.Listener<JSONObject>() {
+               @Override
+               public void onResponse(JSONObject response) {
+                  JSONArray jsonArray = null;
+                  try {
+                     jsonArray = response.getJSONArray("genres");
+                     mAdapter.sAllGenres = new Genres(jsonArray);
                   } catch (JSONException e) {
                      e.printStackTrace();
                   }

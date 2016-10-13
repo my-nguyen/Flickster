@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nguyen.flickster.R;
+import com.nguyen.flickster.models.Genres;
 import com.nguyen.flickster.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -27,11 +28,15 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
    static Context sContext;
    static int sOrientation;
+   public static Genres sAllGenres;
 
    // view lookup cache
    static class ViewHolder {
       @BindView(R.id.image) ImageView image;
+      @BindView(R.id.play) ImageView play;
       @BindView(R.id.title) TextView title;
+      @BindView(R.id.vote_average) TextView voteAverage;
+      @BindView(R.id.genres) TextView genres;
       @BindView(R.id.overview) TextView overview;
 
       public ViewHolder(View view) {
@@ -41,12 +46,22 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
       void populate(Movie movie) {
          if (sOrientation == Configuration.ORIENTATION_PORTRAIT) {
             Picasso.with(sContext).load(movie.posterPath).placeholder(R.drawable.homer)
-                  .transform(new RoundedCornersTransformation(10, 10)).into(image);
+                  .into(image);
          } else if (sOrientation == Configuration.ORIENTATION_LANDSCAPE){
             Picasso.with(sContext).load(movie.backdropPath).placeholder(R.drawable.homer)
                   .transform(new RoundedCornersTransformation(10, 10)).into(image);
          }
+         play.setVisibility(movie.voteAverage >= 6.0 ? View.VISIBLE : View.GONE);
          title.setText(movie.originalTitle);
+         String starCount = String.format("%.1f", movie.voteAverage);
+         voteAverage.setText(starCount);
+         String genresString = "";
+         for (Integer genreId : movie.genreIds) {
+            genresString += sAllGenres.get(genreId) + ", ";
+         }
+         // chop the trailing ", "
+         genresString = genresString.substring(0, genresString.length()-2);
+         genres.setText(genresString);
          overview.setText(movie.overview);
       }
    }

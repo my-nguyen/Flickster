@@ -22,8 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
+import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX_MOVIE;
 import static com.nguyen.flickster.Defs.TMDB_VALUE_API_KEY;
-import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
 
 /**
  * Created by My on 10/12/2016.
@@ -44,7 +44,7 @@ public class YouTubePlayerActivity extends YouTubeBaseActivity {
       mRequestQueue = Volley.newRequestQueue(this);
       String id = getIntent().getStringExtra("ID_IN");
       final String TRAILERS = "trailers?";
-      String url = TMDB_URL_PREFIX + id + "/" + TRAILERS + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
+      String url = TMDB_URL_PREFIX_MOVIE + id + "/" + TRAILERS + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
       JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
             new Response.Listener<JSONObject>() {
                @Override
