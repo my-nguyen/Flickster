@@ -1,150 +1,76 @@
 package com.nguyen.flickster;
 
-import android.content.Intent;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.nguyen.flickster.adapters.MovieArrayAdapter;
-import com.nguyen.flickster.models.Genres;
-import com.nguyen.flickster.models.Movie;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.nguyen.flickster.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-import static com.nguyen.flickster.Defs.TMDB_NAME_API_KEY;
-import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX_MOVIE;
-import static com.nguyen.flickster.Defs.TMDB_VALUE_API_KEY;
-import static com.nguyen.flickster.Defs.TMDB_URL_PREFIX;
+import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity {
-   List<Movie> mMovies;
-   MovieArrayAdapter mAdapter;
-   RequestQueue mRequestQueue;
-   Genres mGenres;
-   @BindView(R.id.listView) ListView mListView;
-   @BindView(R.id.swipe_container) SwipeRefreshLayout mSwipeContainer;
+    private static final String TAG = "MainActivity";
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
+    @Inject
+    MainViewModel mainViewModel;
+    @Inject
+    MovieRepository repository;
 
-      ButterKnife.bind(this);
+    private List<Movie> movies;
+    private MoviesAdapter adapter;
+    private ActivityMainBinding binding;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
-      mMovies = new ArrayList<>();
-      mAdapter = new MovieArrayAdapter(this, mMovies);
-      mListView.setAdapter(mAdapter);
-      mRequestQueue = Volley.newRequestQueue(this);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ((MyApplication)getApplicationContext()).appComponent.inject(this);
 
-      fetchMovies();
-      fetchGenres();
+        super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-      mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-         @Override
-         public void onRefresh() {
-            fetchMovies();
-         }
-      });
-      // Configure the refreshing colors
-      mSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light);
-
-      mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-         @Override
-         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Movie movie = mMovies.get(i);
-            if (movie.voteAverage >= 5.0) {
-               Intent intent = new Intent(MainActivity.this, YouTubePlayerActivity.class);
-               intent.putExtra("ID_IN", movie.id);
-               startActivity(intent);
-            } else {
-               Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-               intent.putExtra("MOVIE_IN", movie);
-               startActivity(intent);
+        // mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        movies = new ArrayList<>();
+        adapter = new MoviesAdapter(movies, this);
+        binding.recyclerView.setAdapter(adapter);
+        LinearLayoutManager linearLayout = new LinearLayoutManager(this);
+        binding.recyclerView.setLayoutManager(linearLayout);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayout) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                fetchMovies();
             }
-         }
-      });
-   }
+        };
+        binding.recyclerView.addOnScrollListener(scrollListener);
 
-   private void fetchMovies() {
-      final String NOW_PLAYING = "now_playing?";
-      String url = TMDB_URL_PREFIX_MOVIE + NOW_PLAYING + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
-      JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
-            new Response.Listener<JSONObject>() {
-               @Override
-               public void onResponse(JSONObject response) {
-                  JSONArray jsonArray = null;
-                  try {
-                     jsonArray = response.getJSONArray("results");
-                     // clear out old items before appending new ones
-                     mAdapter.clear();
-                     // add new items to the adapter
-                     mAdapter.addAll(Movie.fromJSONArray(jsonArray));
-                     Log.d("TRUONG", mMovies.toString());
-                     // signal that refresh has finished
-                     mSwipeContainer.setRefreshing(false);
-                  } catch (JSONException e) {
-                     e.printStackTrace();
-                  }
-               }
-            },
-            new Response.ErrorListener() {
-               @Override
-               public void onErrorResponse(VolleyError error) {
-                  VolleyLog.e("Error: ", error.getMessage());
-               }
-            }
-      );
-      // Add your Requests to the RequestQueue to execute
-      mRequestQueue.add(req);
-   }
+        // first fetch the genres, then upon success, fetch the first page of movies
+        fetchGenres();
+    }
 
-   void fetchGenres() {
-      final String TMDB_TABLE_GENRE = "genre/movie/";
-      final String LIST = "list?";
-      String url = TMDB_URL_PREFIX + TMDB_TABLE_GENRE + LIST + TMDB_NAME_API_KEY + TMDB_VALUE_API_KEY;
-      JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
-            new Response.Listener<JSONObject>() {
-               @Override
-               public void onResponse(JSONObject response) {
-                  JSONArray jsonArray = null;
-                  try {
-                     jsonArray = response.getJSONArray("genres");
-                     mGenres = new Genres(jsonArray);
-                  } catch (JSONException e) {
-                     e.printStackTrace();
-                  }
-               }
-            },
-            new Response.ErrorListener() {
-               @Override
-               public void onErrorResponse(VolleyError error) {
-                  VolleyLog.e("Error: ", error.getMessage());
-               }
+    void fetchGenres() {
+        mainViewModel.getGenres().observe(this, new Observer<Map<Integer, String>>() {
+            @Override
+            public void onChanged(Map<Integer, String> map) {
+                fetchMovies();
             }
-      );
-      // Add your Requests to the RequestQueue to execute
-      mRequestQueue.add(req);
-   }
+        });
+    }
+
+    private void fetchMovies() {
+        mainViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(List<Movie> data) {
+                int size = movies.size();
+                movies.addAll(data);
+                adapter.notifyItemRangeInserted(size, data.size());
+            }
+        });
+    }
 }

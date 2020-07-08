@@ -2,64 +2,97 @@ package com.nguyen.flickster;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.ViewTreeObserver;
 
-import com.nguyen.flickster.models.Genres;
-import com.nguyen.flickster.models.Movie;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+
+import com.nguyen.flickster.databinding.ActivityDetailBinding;
 import com.squareup.picasso.Picasso;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+import javax.inject.Inject;
+
+import static com.nguyen.flickster.YoutubeActivity.EXTRA_MOVIE_ID;
 
 /**
  * Created by My on 10/12/2016.
  */
-
 public class DetailActivity extends AppCompatActivity {
-   @BindView(R.id.image) ImageView image;
-   @BindView(R.id.title) TextView title;
-   @BindView(R.id.vote_average) TextView voteAverage;
-   @BindView(R.id.genres) TextView genres;
-   @BindView(R.id.overview) TextView overview;
+    public static final String EXTRA_MOVIE_OBJECT = "MOVIE_OBJECT";
 
-   @Override
-   protected void onCreate(@Nullable Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_detail);
+    private static final String TAG = "DetailActivity";
 
-      ButterKnife.bind(this);
+    @Inject
+    MovieRepository repository;
 
-      final Movie movie = (Movie)getIntent().getSerializableExtra("MOVIE_IN");
+    private ActivityDetailBinding binding;
 
-      Picasso.with(this).load(movie.posterPath).placeholder(R.drawable.homer)
-            .transform(new RoundedCornersTransformation(10, 10)).into(image);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ((MyApplication)getApplicationContext()).appComponent.inject(this);
 
-      image.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            Intent intent = new Intent(DetailActivity.this, YouTubePlayerActivity.class);
-            intent.putExtra("ID_IN", movie.id);
-            startActivity(intent);
-         }
-      });
+        super.onCreate(savedInstanceState);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-      String year = movie.releaseDate.split("-")[0];
-      String text = movie.originalTitle + " (" + year + ")";
-      title.setText(text);
+        final Movie movie = (Movie)getIntent().getSerializableExtra(EXTRA_MOVIE_OBJECT);
+        Log.d(TAG, movie.toString());
 
-      String starCount = String.format("%.1f", movie.voteAverage);
-      voteAverage.setText(starCount);
+        // showImageUsingObserver(movie);
+        showImageUsingFixedWidth(movie);
 
-      String genresString = Genres.getInstance().get(movie.genreIds.get(0));
-      for (int i = 1; i < movie.genreIds.size(); i++)
-         genresString += ", " + Genres.getInstance().get(movie.genreIds.get(i));
-      genres.setText(genresString);
+        binding.detailImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailActivity.this, YoutubeActivity.class);
+                intent.putExtra(EXTRA_MOVIE_ID, movie.id);
+                startActivity(intent);
+            }
+        });
 
-      overview.setText(movie.overview);
-   }
+        // extract release year and append it to title
+        String year = movie.releaseDate.split("-")[0];
+        String text = movie.title + " (" + year + ")";
+        binding.detailTitle.setText(text);
+
+        // show vote average together with a star
+        String starCount = String.format("%.1f", movie.voteAverage);
+        binding.detailVoteAverage.setText(starCount);
+
+        // list all genres, separated by commas
+        String genres = repository.genres.get(movie.genreIds.get(0));
+        for (int i = 1; i < movie.genreIds.size(); i++)
+            genres += ", " + repository.genres.get(movie.genreIds.get(i));
+        binding.detailGenres.setText(genres);
+
+        // show the overview text
+        binding.detailOverview.setText(movie.overview);
+    }
+
+    private void showImageUsingObserver(Movie movie) {
+        ViewTreeObserver observer = binding.detailImage.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.detailImage.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                int width  = binding.detailImage.getMeasuredWidth();
+                Picasso.get()
+                        .load(movie.IMAGE_PREFIX + movie.posterPath)
+                        .resize(width, 0)
+                        .placeholder(R.drawable.homer)
+                        .into(binding.detailImage);
+            }
+        });
+    }
+
+    private void showImageUsingFixedWidth(Movie movie) {
+        int widthPixels = getResources().getDisplayMetrics().widthPixels;
+        Picasso.get()
+                .load(movie.IMAGE_PREFIX + movie.posterPath)
+                .resize(widthPixels / 2, 0)
+                .placeholder(R.drawable.homer)
+                .into(binding.detailImage);
+    }
 }

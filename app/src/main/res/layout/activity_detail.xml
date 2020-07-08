@@ -1,68 +1,90 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <FrameLayout
-        android:id="@+id/image_frame"
-        android:layout_width="0dp"
-        android:layout_weight="2"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/image"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
-        <ImageView
-            android:id="@+id/play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:src="@drawable/play"/>
-    </FrameLayout>
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp">
-        <TextView
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/detail_guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
+
+        <FrameLayout
+            android:id="@+id/detail_frame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/detail_guideline"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/detail_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:id="@+id/detail_play_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:src="@drawable/play_button"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/detail_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:id="@+id/title"
+            android:paddingTop="5dp"
             android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/detail_guideline"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <TextView
-            android:id="@+id/vote_average"
+            android:id="@+id/detail_vote_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintTop_toBottomOf="@+id/detail_title"
+            app:layout_constraintStart_toEndOf="@+id/detail_guideline"/>
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
-            android:layout_toRightOf="@id/vote_average"
-            android:layout_alignBottom="@id/vote_average"
-            android:layout_marginLeft="3dp"
-            android:src="@drawable/star"/>
+            android:paddingTop="3dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="8dp"
+            android:src="@drawable/star"
+            app:layout_constraintTop_toBottomOf="@+id/detail_title"
+            app:layout_constraintStart_toEndOf="@+id/detail_vote_average"/>
+
         <TextView
-            android:id="@+id/genres"
-            android:layout_width="wrap_content"
+            android:id="@+id/detail_genres"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textStyle="italic"
-            android:layout_below="@id/vote_average"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintTop_toBottomOf="@+id/detail_vote_average"
+            app:layout_constraintStart_toEndOf="@+id/detail_guideline"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <TextView
+            android:id="@+id/detail_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/genres"
             android:layout_marginTop="20dp"
-            android:id="@+id/overview"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </RelativeLayout>
-</LinearLayout>
+            android:paddingStart="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintTop_toBottomOf="@+id/detail_frame"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
