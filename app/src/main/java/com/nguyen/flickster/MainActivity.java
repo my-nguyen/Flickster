@@ -16,6 +16,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+/**
+ * Created by My on 10/11/2016
+ * Updated by My on 6/30/2020:
+ * 1. replaced ListView with RecyclerView
+ * 2. replaced ButterKnife with data binding
+ * 3. removed SwipeRefreshLayout from MainActivity
+ * 4. replaced Volley with Retrofit
+ * 5. added EndlessRecyclerViewScrollListener
+ * 6. replaced LinearLayout and RelativeLayout with ConstraintLayout
+ * 7. implemented MVVM
+ * 8. partially implemented Dagger DI
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 

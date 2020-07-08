@@ -31,11 +31,8 @@ import static com.nguyen.flickster.YoutubeActivity.EXTRA_MOVIE_ID;
  * 5. added EndlessRecyclerViewScrollListener
  * 6. replaced LinearLayout and RelativeLayout with ConstraintLayout
  * 7. implemented MVVM
- * 8. implemented Dagger DI ?
- * 9. Room
- * 10. implemented RxAndroid ?
+ * 8. partially implemented Dagger DI
  */
-
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
