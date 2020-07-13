@@ -38,34 +38,34 @@ public class MovieRepository {
 
     public LiveData<Map<Integer, String>> getGenres() {
         final MutableLiveData<Map<Integer, String>> data = new MutableLiveData<>();
-        movieAPI.getGenres(TMDB_API_KEY).enqueue(new Callback<Genres>() {
+        movieAPI.getGenres(TMDB_API_KEY).enqueue(new Callback<JsonGenres>() {
             @Override
-            public void onResponse(Call<Genres> call, Response<Genres> response) {
+            public void onResponse(Call<JsonGenres> call, Response<JsonGenres> response) {
                 genres = new HashMap<>();
-                for (Genre genre : response.body().genres) {
+                for (JsonGenre genre : response.body().genres) {
                     genres.put(genre.id, genre.name);
                 }
                 data.setValue(genres);
             }
 
             @Override
-            public void onFailure(Call<Genres> call, Throwable t) {
+            public void onFailure(Call<JsonGenres> call, Throwable t) {
                 Log.d(TAG, "onFailure: failed to fetch genres");
             }
         });
         return data;
     }
 
-    public LiveData<List<Movie>> getPage() {
-        final MutableLiveData<List<Movie>> movies = new MutableLiveData<>();
+    public LiveData<List<JsonMovie>> getPage() {
+        final MutableLiveData<List<JsonMovie>> movies = new MutableLiveData<>();
         if (page != 1 && page >= totalPages) {
             return movies;
         }
 
-        Call<Page> call = movieAPI.getPage(TMDB_API_KEY, page);
-        call.enqueue(new Callback<Page>() {
+        Call<JsonPage> call = movieAPI.getPage(TMDB_API_KEY, page);
+        call.enqueue(new Callback<JsonPage>() {
             @Override
-            public void onResponse(Call<Page> call, Response<Page> response) {
+            public void onResponse(Call<JsonPage> call, Response<JsonPage> response) {
                 if (page == 1) {
                     // save total pages
                     totalPages = response.body().totalPages;
@@ -75,7 +75,7 @@ public class MovieRepository {
             }
 
             @Override
-            public void onFailure(Call<Page> call, Throwable t) {
+            public void onFailure(Call<JsonPage> call, Throwable t) {
                 Log.d(TAG, "getPage.onFailure");
             }
         });
@@ -84,17 +84,17 @@ public class MovieRepository {
 
     public LiveData<String> getTrailer(int movieId) {
         final MutableLiveData<String> trailer = new MutableLiveData<>();
-        Call<Trailers> call = movieAPI.getTrailers(movieId, TMDB_API_KEY);
-        call.enqueue(new Callback<Trailers>() {
+        Call<JsonTrailers> call = movieAPI.getTrailers(movieId, TMDB_API_KEY);
+        call.enqueue(new Callback<JsonTrailers>() {
             @Override
-            public void onResponse(Call<Trailers> call, Response<Trailers> response) {
+            public void onResponse(Call<JsonTrailers> call, Response<JsonTrailers> response) {
                 // grab the "source" field of the first youtube trailer from a list
                 String source = response.body().youtube.get(0).source;
                 trailer.setValue(source);
             }
 
             @Override
-            public void onFailure(Call<Trailers> call, Throwable t) {
+            public void onFailure(Call<JsonTrailers> call, Throwable t) {
             }
         });
         return trailer;

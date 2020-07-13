@@ -21,8 +21,9 @@ public class NetworkModule {
                 .addConverterFactory(factory.create())
                 .build();
     }
+
     @Provides
-    public MovieAPI provideMovieAPI(Retrofit retrofit) {
+    MovieAPI provideMovieAPI(Retrofit retrofit) {
         return retrofit.create(MovieAPI.class);
     }
 }

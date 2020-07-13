@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
-class Movie implements Serializable {
+class JsonMovie implements Serializable {
     public static final String IMAGE_PREFIX = "https://image.tmdb.org/t/p/w342";
 
     @SerializedName("popularity")

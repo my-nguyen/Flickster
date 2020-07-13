@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Page {
+public class JsonPage {
     @SerializedName("results")
-    public List<Movie> movies = null;
+    public List<JsonMovie> movies = null;
     @SerializedName("page")
     public Integer page;
     @SerializedName("total_results")

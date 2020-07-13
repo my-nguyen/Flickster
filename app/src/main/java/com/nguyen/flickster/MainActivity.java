@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     MovieRepository repository;
 
-    private List<Movie> movies;
+    private List<JsonMovie> movies;
     private MoviesAdapter adapter;
     private ActivityMainBinding binding;
     private EndlessRecyclerViewScrollListener scrollListener;
@@ -77,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchMovies() {
-        mainViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+        mainViewModel.getMovies().observe(this, new Observer<List<JsonMovie>>() {
             @Override
-            public void onChanged(List<Movie> data) {
+            public void onChanged(List<JsonMovie> data) {
                 int size = movies.size();
                 movies.addAll(data);
                 adapter.notifyItemRangeInserted(size, data.size());

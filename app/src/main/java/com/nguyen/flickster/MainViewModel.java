@@ -25,7 +25,7 @@ public class MainViewModel extends ViewModel {
         return repository.getGenres();
     }
 
-    public LiveData<List<Movie>> getMovies() {
+    public LiveData<List<JsonMovie>> getMovies() {
         return repository.getPage();
     }
 }

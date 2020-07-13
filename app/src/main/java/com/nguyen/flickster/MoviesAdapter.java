@@ -52,7 +52,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
-            Movie movie = movies.get(getAdapterPosition());
+            JsonMovie movie = movies.get(getAdapterPosition());
             if (movie.voteAverage >= VOTE_THRESHOLD) {
                 Intent intent = new Intent(context, YoutubeActivity.class);
                 intent.putExtra(EXTRA_MOVIE_ID, movie.id);
@@ -64,7 +64,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             }
         }
 
-        void bind(Movie movie) {
+        void bind(JsonMovie movie) {
             int widthPixels = context.getResources().getDisplayMetrics().widthPixels;
             Picasso.get()
                     .load(movie.IMAGE_PREFIX + movie.backdropPath)
@@ -99,11 +99,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     @Inject
     MovieRepository repository;
 
-    private List<Movie> movies;
+    private List<JsonMovie> movies;
     private Context context;
 
     @Inject
-    public MoviesAdapter(List<Movie> movies, Context context) {
+    public MoviesAdapter(List<JsonMovie> movies, Context context) {
         this.movies = movies;
         this.context = context;
         ((MyApplication)context.getApplicationContext()).appComponent.inject(this);
@@ -119,7 +119,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@androidx.annotation.NonNull ViewHolder holder, int position) {
-        Movie movie = movies.get(position);
+        JsonMovie movie = movies.get(position);
         holder.bind(movie);
     }
 

@@ -47,7 +47,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-        final Movie movie = (Movie)getIntent().getSerializableExtra(EXTRA_MOVIE_OBJECT);
+        final JsonMovie movie = (JsonMovie)getIntent().getSerializableExtra(EXTRA_MOVIE_OBJECT);
         Log.d(TAG, movie.toString());
 
         // showImageUsingObserver(movie);
@@ -81,7 +81,7 @@ public class DetailActivity extends AppCompatActivity {
         binding.detailOverview.setText(movie.overview);
     }
 
-    private void showImageUsingObserver(Movie movie) {
+    private void showImageUsingObserver(JsonMovie movie) {
         ViewTreeObserver observer = binding.detailImage.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -97,7 +97,7 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void showImageUsingFixedWidth(Movie movie) {
+    private void showImageUsingFixedWidth(JsonMovie movie) {
         int widthPixels = getResources().getDisplayMetrics().widthPixels;
         Picasso.get()
                 .load(movie.IMAGE_PREFIX + movie.posterPath)

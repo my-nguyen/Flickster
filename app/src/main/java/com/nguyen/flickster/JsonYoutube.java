@@ -2,7 +2,7 @@ package com.nguyen.flickster;
 
 import com.google.gson.annotations.SerializedName;
 
-class Youtube {
+class JsonYoutube {
     @SerializedName("name")
     public String name;
     @SerializedName("size")
